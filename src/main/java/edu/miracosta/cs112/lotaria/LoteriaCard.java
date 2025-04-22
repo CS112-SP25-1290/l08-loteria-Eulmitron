@@ -1,6 +1,9 @@
 package edu.miracosta.cs112.lotaria;
 
 import javafx.scene.image.Image;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -78,15 +81,21 @@ public class LoteriaCard {
      * @return returns Image object that can be used to display it in an ImageView in GUI
      **/
     public Image getImage() {
-        FileInputStream input = null;
         try {
-            input = new FileInputStream("file:./resources/" + this.imageName);
-        } catch (FileNotFoundException e) {
-            //e.printStackTrace();
-            System.err.println("ERROR: could not open file.");
-            System.exit(0);
+            // Use the File class to create a proper file URL
+            File imageFile = new File("resources/" + this.imageName);
+            System.out.println("Trying to load: " + imageFile.getAbsolutePath());
+            if (imageFile.exists()) {
+                System.out.println("File exists!");
+            } else {
+                System.out.println("File does not exist!");
+            }
+            return new Image(imageFile.toURI().toString());
+        } catch (Exception e) {
+            System.err.println("ERROR: could not load image: " + this.imageName);
+            e.printStackTrace();
+            return null;
         }
-        return new Image(input);
     }
 
     public void setImageName(String imageName) {
@@ -107,10 +116,11 @@ public class LoteriaCard {
         return "Loteria Card #" + this.cardNum + ": " + this.cardName + "(" + this.imageName + ")";
     }
 
-    //Equals method
+    //Equals method - Fixed to use older Java syntax
     @Override
     public boolean equals(Object o) {
-        if (o instanceof LoteriaCard other) {
+        if (o instanceof LoteriaCard) {
+            LoteriaCard other = (LoteriaCard) o;
             return this.cardName.equals(other.cardName)
                     && this.cardNum == other.cardNum
                     && this.imageName.equals(other.imageName);
